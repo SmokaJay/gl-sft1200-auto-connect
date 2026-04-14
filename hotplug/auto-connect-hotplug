@@ -1,0 +1,30 @@
+#!/bin/sh
+# /etc/hotplug.d/iface/30-auto-connect
+#
+# React to network interface events. When the WAN interface goes down
+# unexpectedly, signal the daemon to re-scan immediately by clearing
+# its sleep via the PID file.
+#
+# OpenWrt hotplug variables:
+#   INTERFACE — UCI interface name  (e.g. "wwan")
+#   ACTION    — "ifup" or "ifdown"
+
+WAN_IFACE="wwan"
+PIDFILE="/var/run/auto-connect.pid"
+LOG_TAG="auto-connect-hotplug"
+
+[ "$INTERFACE" = "$WAN_IFACE" ] || exit 0
+
+case "$ACTION" in
+    ifup)
+        logger -t "$LOG_TAG" "WAN interface came up"
+        ;;
+    ifdown)
+        logger -t "$LOG_TAG" "WAN interface went down — waking daemon"
+        # Wake the sleeping daemon so it re-scans immediately
+        if [ -f "$PIDFILE" ]; then
+            pid=$(cat "$PIDFILE")
+            kill -USR1 "$pid" 2>/dev/null
+        fi
+        ;;
+esac

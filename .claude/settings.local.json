@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\\\Users\\\\jason\\\\Documents\\\\Router\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(git --version)",
+      "Bash(gh --version)",
+      "Bash(where gh:*)",
+      "Bash(powershell -Command \"Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source\")",
+      "Bash(powershell -Command 'Get-Command gh -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source; $env:PATH -split '\\\\'';'\\\\'' | Where-Object { $_ -like '\\\\''*GitHub*'\\\\'' }')",
+      "Bash(powershell -Command \"& 'C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe' --version\")",
+      "Bash(powershell -Command \"& 'C:\\\\Users\\\\jason\\\\AppData\\\\Local\\\\Programs\\\\GitHub CLI\\\\gh.exe' --version\")",
+      "Bash(powershell -Command \"& 'C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe' auth status\")"
+    ]
+  }
+}

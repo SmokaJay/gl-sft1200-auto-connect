@@ -1,0 +1,7 @@
+# UCI stanza to add to /etc/config/network on the router.
+# This defines the "wwan" interface that the daemon will use.
+# Add this block if it doesn't already exist.
+
+config interface 'wwan'
+	option proto 'dhcp'
+	option metric '20'
