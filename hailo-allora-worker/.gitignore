@@ -1,0 +1,6 @@
+secrets/worker_private_key.txt
+secrets/*.txt
+secrets/*.json
+.env
+__pycache__/
+*.pyc

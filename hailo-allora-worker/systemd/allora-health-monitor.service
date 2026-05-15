@@ -1,0 +1,18 @@
+[Unit]
+Description=Allora Worker Health Monitor
+After=docker.service hailo-inference.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/home/pi/hailo-allora-worker/scripts/health_monitor.sh
+Restart=always
+RestartSec=30
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=allora-health-monitor
+EnvironmentFile=-/home/pi/hailo-allora-worker/.env
+
+[Install]
+WantedBy=multi-user.target

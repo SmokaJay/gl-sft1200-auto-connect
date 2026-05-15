@@ -1,0 +1,31 @@
+node:
+  role: worker
+  name: hailo-cv-worker-1
+
+wallet:
+  private_key_file: /run/secrets/worker_key
+
+chain:
+  rpc_url: https://rpc.allora.network:26657
+  chain_id: allora-mainnet-1
+  grpc_url: https://grpc.allora.network:9090
+  gas_price: 1uallo
+  gas_multiplier: 1.2
+
+topics:
+  - id: 5
+    name: "Image Classification (Computer Vision)"
+    inference_endpoint: http://inference:8000/predict
+    submit_interval_blocks: 60
+    stake:
+      amount: 100000000
+      denom: uallo
+
+logging:
+  level: info
+  format: json
+  file: /var/log/allora/worker.log
+
+monitoring:
+  metrics_port: 9090
+  enable_prometheus: true

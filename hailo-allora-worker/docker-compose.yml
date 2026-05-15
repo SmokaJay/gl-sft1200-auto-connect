@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  inference:
+    build:
+      context: ./inference
+      dockerfile: Dockerfile
+    container_name: hailo-inference
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - /home/pi/models:/models:ro
+      - hailo-data:/data
+      # Expose host Python path so hailo_platform (system package) is importable
+      - /usr/lib/python3/dist-packages:/usr/lib/python3/dist-packages:ro
+      - /usr/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:ro
+    devices:
+      - /dev/hailo0:/dev/hailo0
+    privileged: false
+    restart: always
+    networks:
+      - allora-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  worker:
+    image: alloranetwork/allora-node:latest
+    container_name: allora-worker
+    depends_on:
+      inference:
+        condition: service_healthy
+    environment:
+      - ALLORA_RPC_URL=https://rpc.allora.network:26657
+      - ALLORA_CHAIN_ID=allora-mainnet-1
+      - ALLORA_GAS_PRICE=1uallo
+      - WORKER_NAME=hailo-worker-1
+      - WORKER_TOPICS=5
+      - WORKER_PORT=6000
+      - INFERENCE_URL=http://inference:8000/predict
+      - SUBMISSION_INTERVAL=300
+    ports:
+      - "6000:6000"
+    volumes:
+      - ./worker_config.yaml:/workspace/config.yaml:ro
+      - ./secrets/worker_private_key.txt:/run/secrets/worker_key:ro
+      - worker-logs:/var/log/allora
+    networks:
+      - allora-net
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "10"
+
+volumes:
+  hailo-data:
+  worker-logs:
+
+networks:
+  allora-net:
+    driver: bridge
